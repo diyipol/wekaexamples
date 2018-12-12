@@ -66,6 +66,17 @@ rainy,65,70,TRUE,no
 
 
 
+## Entorno
+
+Este tutorial está escrito usando el siguiente entorno:
+
+- Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
+
+- Sistema operativo: macOS Mojave 10.14.1
+
+- Versiones del software:
+
+
 ## Datos de entrada
 
 Para el tutorial vamos a utilizar el fichero "weather.numeric.arff" que viene dentro de los ficheros de ejemplo dentro de la carpeta "data" de la distribución de _Weka_. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
@@ -153,15 +164,40 @@ Number of Leaves  : 	5
 Size of the tree : 	8
 ```
 
+El proceso de decisión comienza en el nodo raíz, en este caso con el atributo _outlook_. Vemos hay dos instancias que indican que se puede jugar al golf si está soleado y la humedad es menor al 75%. Dos instancias indican que no se puede jugar al golf si está soleado pero la humedad es mayor al 75% y así podemos seguir recorriendo todo el árbol.
 
+Ahora vamos a clasificar una nueva instancia. Para ello vamos a usar la clase _DenseInstance_. Iremos estableciendo el valor de cada atributo según su índice. Finamente le pediremos al árbol J48 que nos lo clasifique. 
 
-## Entorno
+```java
+Instance instance = new DenseInstance(4);
+instance.setDataset(instances);
+instance.setValue(0, "sunny");
+instance.setValue(1, 65);
+instance.setValue(2, 80);
+instance.setValue(3, "TRUE");
 
-Este tutorial está escrito usando el siguiente entorno:
+double result = tree.classifyInstance(instance);
 
-- Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
-- Sistema operativo: macOS Mojave 10.14.1
-- Versiones del software:
+System.out.println("Resultado de clasificar la nueva instancia:" + result);
+```
+
+Esta clase sólo trabaja con números flotantes, por lo que si el atributo es no numeral lo almacena/muestra según el índice con que se haya definido en las instancias. En este caso como la humedad es mayor al 75% (índice 2) vemos que el resultado es 1.0. Como habíamos definido el atributo _play_ de la siguiente manera:
+
+```
+@attribute play {yes, no}
+```
+
+Ese 1.0 sabemos que significa NO.
+
+Si seteamos el valor con índice 2 a 65 veremos como la salida cambia a 0.0 (yes).
+
+```java
+instance.setValue(2, 65);
+```
+
+```shell
+Resultado de clasificar la nueva instancia:0.0
+```
 
 
 

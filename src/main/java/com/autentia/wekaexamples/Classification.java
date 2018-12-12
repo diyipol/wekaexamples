@@ -1,6 +1,8 @@
 package com.autentia.wekaexamples;
 
 import weka.classifiers.trees.J48;
+import weka.core.DenseInstance;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
 import weka.filters.Filter;
@@ -34,6 +36,18 @@ public class Classification {
         tree.buildClassifier(instances);
 
         System.out.println(tree);
+
+        Instance instance = new DenseInstance(4);
+        instance.setDataset(instances);
+        instance.setValue(WeatherAttributesIndex.OUTLOOK.getIndex(), "sunny");
+        instance.setValue(WeatherAttributesIndex.TEMPERATURE.getIndex(), 65);
+        instance.setValue(WeatherAttributesIndex.HUMIDITY.getIndex(), 65);
+        instance.setValue(WeatherAttributesIndex.WINDY.getIndex(), "TRUE");
+
+        int result = (int) tree.classifyInstance(instance);
+
+        System.out.println("Resultado de clasificar la nueva instancia: " + PlayAttributeValues.newInstance(result));
+
     }
 
     private File getFile(String fileName) {
