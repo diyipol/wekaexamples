@@ -201,6 +201,47 @@ Resultado de clasificar la nueva instancia:0.0
 
 
 
+### Métricas de error de evaluación y predicción
+
+Ahora vamos a ver qué confianza podemos tener en el modelo que acabamos de construir. Para estimar su rendimiento podemos usar la técnica de validación cruzada (cross-validation).
+
+Con la validación cruzada vamos dividiendo las instancias de muestra en K subconjuntos. Usaremos una parte del conjunto para entrenar y otra para test.  Esto se repetirá en K iteraciones para finalmente hallar la media aritmética. Por ejemplo en nuestro caso, que tenemos 14 instancias podemos:
+
+* 1ª iteración: Datos de tests -> 1, 2 y 3. Datos de entrenamiento -> 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 y 14
+* 2ª iteración: Datos de tests -> 4, 5 y 6. Datos de entrenamiento -> 1, 2, 3, 7, 8, 9, 10, 11, 12, 13 y 14
+* 3ª iteración: Datos de tests -> 7, 8 y 9. Datos de entrenamiento -> 1, 2, 3, 4, 5, 6, 7, 10, 11, 12, 13 y 14
+* Y así hasta la iteración K.
+
+De esta manera, utilizamos todos los datos para aprender y testear, mientras evitamos usar los mismos datos para entrenar y probar un modelo.
+
+Para nuestro ejemplo vamos a dividir en 5 subconjuntos.
+
+```java
+Classifier classifier = new J48();
+Evaluation evaluation = new Evaluation(instances);
+int numFolds = 5;
+Random random = new Random(1);
+evaluation.crossValidateModel(classifier, instances, numFolds, random, new Object[] {});
+System.out.println(evaluation.toSummaryString());
+```
+
+Hay que tener en cuenta que la salida que obtenemos no diferencia entre clasificación y regresión:
+
+```shell
+Correctly Classified Instances           9               64.2857 %
+Incorrectly Classified Instances         5               35.7143 %
+Kappa statistic                          0.186 
+Mean absolute error                      0.3214
+Root mean squared error                  0.5428
+Relative absolute error                 68.8235 %
+Root relative squared error            112.8506 %
+Total Number of Instances               14    
+```
+
+Por lo que en este caso sólo nos interesa el número de instancias correctamente e incorrectamente clasificadas.
+
+
+
 ## Referencias
 
 * Machine Learning in Java - Second Edition by AshishSingh Bhatia; Bostjan Kaluza. Published by Packt Publishing, 2018.

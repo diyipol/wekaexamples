@@ -1,5 +1,7 @@
 package com.autentia.wekaexamples;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.Evaluation;
 import weka.classifiers.trees.J48;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -10,6 +12,7 @@ import weka.filters.unsupervised.attribute.Remove;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Random;
 
 public class Classification {
 
@@ -47,6 +50,16 @@ public class Classification {
         int result = (int) tree.classifyInstance(instance);
 
         System.out.println("Resultado de clasificar la nueva instancia: " + PlayAttributeValues.newInstance(result));
+
+        Classifier classifier = new J48();
+        Evaluation evaluation = new Evaluation(instances);
+        int numFolds = 5;
+        Random random = new Random(1);
+        evaluation.crossValidateModel(classifier, instances, numFolds, random, new Object[] {});
+        System.out.println(evaluation.toSummaryString());
+
+        double[][] confusionMatrix = evaluation.confusionMatrix();
+        System.out.println(evaluation.toMatrixString());
 
     }
 
