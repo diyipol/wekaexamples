@@ -86,7 +86,72 @@ Vamos a empezar con la técnica de _learning machine_ más utilizada, la clasifi
 
  
 
-En la carpeta de _resources_ añadimos el fichero _weather.numeric.arff_. Para cargar el fichero usaremos la clase _Datasource_ que soporta diferentes formatos de ficheros para transformarlos a la clase _Instances_. 
+En la carpeta de _resources_ añadimos el fichero _weather.numeric.arff_. Para cargar el fichero usaremos la clase _Datasource_ que soporta diferentes formatos de ficheros para transformarlos a la clase _Instances_. A las instancias les señalamos cual es la variable de salida (_class index_), en este caso va a ser el último atributo, _play_.
+
+```java
+File file = getFile("weather.arff");
+
+ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
+Instances instances = source.getDataSet();
+instances.setClassIndex(instances.numAttributes() - 1);
+
+System.out.println(instances.numInstances() + " instancias cargadas.");
+System.out.println(instances.toString());
+```
+
+
+
+Si necesitáramos eliminar algún atributo de las instancias podemos usar el filtro _Remove_. Por ejemplo para eliminar el atributo de temperatura que tiene el índice 2, haríamos:
+
+```java
+Remove remove = new Remove();
+String[] opts = new String[]{ "-R", "2"};
+remove.setOptions(opts);
+remove.setInputFormat(instances);
+
+instances = Filter.useFilter(instances, remove);
+```
+
+En nuestro ejemplo no vamos a eliminar ningún atributo.
+
+
+
+### Árbol de decisión
+
+En Weka el árbol de decisión está implementado en la clase J48, que es una reimplementación del algoritmo C4.5 de Quinlan (https://es.wikipedia.org/wiki/C4.5).
+
+Al algoritmo le podemos pasar parámetros adicionales como por ejemplo la poda del árbol para controlar la complejidad del modelo. En este caso le vamos a indicar que no queremos podado. Finalmente para inicializar el proceso de aprendizaje llamamos a _buildClassifier_. El objeto construido se encuentra ahora en la variable _tree_ y podemos visualizarlo con _toString_.
+
+```java
+J48 tree = new J48();
+String[] options = new String[1];
+options[0] = TREE_UNPRUNED_OPT;
+
+tree.setOptions(options);
+
+tree.buildClassifier(instances);
+
+System.out.println(tree);
+```
+
+Tenemos como salida:
+
+```shell
+J48 unpruned tree
+------------------
+
+outlook = sunny
+|   humidity <= 75: yes (2.0)
+|   humidity > 75: no (3.0)
+outlook = overcast: yes (4.0)
+outlook = rainy
+|   windy = TRUE: no (2.0)
+|   windy = FALSE: yes (3.0)
+
+Number of Leaves  : 	5
+
+Size of the tree : 	8
+```
 
 
 
