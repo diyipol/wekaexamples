@@ -8,11 +8,8 @@ import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils;
-import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.Remove;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Random;
 
 public class Classification {

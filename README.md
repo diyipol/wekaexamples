@@ -73,7 +73,7 @@ Este tutorial está escrito usando el siguiente entorno:
 - Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
 - Sistema operativo: macOS Mojave 10.14.1
 - Versiones del software:
-  - Weka: 3.9
+  - Weka: 3.8
   - JDK: 1.8
 
 
@@ -89,8 +89,8 @@ Creamos un proyecto maven y le añadimos la dependencia de weka.
 ```xml
 <dependency>
     <groupId>nz.ac.waikato.cms.weka</groupId>
-    <artifactId>weka-dev</artifactId>
-    <version>3.9.3</version>
+    <artifactId>weka-stable</artifactId>
+    <version>3.8.3</version>
 </dependency>
 ```
 
