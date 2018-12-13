@@ -71,13 +71,15 @@ rainy,65,70,TRUE,no
 Este tutorial está escrito usando el siguiente entorno:
 
 - Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
-
 - Sistema operativo: macOS Mojave 10.14.1
-
 - Versiones del software:
+  - Weka: 3.9
+  - JDK: 1.8
 
 
 ## Datos de entrada
+
+Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git.
 
 Para el tutorial vamos a utilizar el fichero "weather.numeric.arff" que viene dentro de los ficheros de ejemplo dentro de la carpeta "data" de la distribución de _Weka_. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
 
@@ -116,7 +118,7 @@ Si necesitáramos eliminar algún atributo de las instancias podemos usar el fil
 
 ```java
 Remove remove = new Remove();
-String[] opts = new String[]{ "-R", "2"};
+String[] opts = new String[]{"-R", "2"};
 remove.setOptions(opts);
 remove.setInputFormat(instances);
 
@@ -238,7 +240,80 @@ Root relative squared error            112.8506 %
 Total Number of Instances               14    
 ```
 
-Por lo que en este caso sólo nos interesa el número de instancias correctamente e incorrectamente clasificadas.
+Por lo que en este caso sólo nos interesa el número de instancias correctamente e incorrectamente clasificadas, que en este caso podemos observar que  se han acertado 9 de las 14 instancias.
+
+Lo siguiente que vamos a inspeccionar es dónde se ha realizado una clasificación errónea con la matríz de confusión. La podemos obtener en un array llamando a:
+
+```java
+double[][] confusionMatrix = evaluation.confusionMatrix();
+```
+
+O imprimirla directamente con:
+
+```java
+System.out.println(evaluation.toMatrixString());
+```
+
+El resultado que obtenemos al imprimirla es:
+
+```shell
+=== Confusion Matrix ===
+
+ a b   <-- classified as
+ 7 2 | a = yes
+ 3 2 | b = no
+```
+
+En este ejemplo a tener una salida booleana no nos aporta ninguna información esta matriz, pero en un ejemplo más complejo, por ejemplo para adivinar animales a partir de sus rasgos (https://github.com/fracpete/collective-classification-weka-package/blob/master/src/site/resources/datasets/nominal/zoo.arff) podemos observar como a un reptil en una ocasión lo clasificó como insecto y en otra como un pez.
+
+```shell
+    === Confusion Matrix ===
+    
+      a  b  c  d  e  f  g   <-- classified as
+     41  0  0  0  0  0  0 |  a = mammal
+      0 20  0  0  0  0  0 |  b = bird
+      0  0  3  1  0  1  0 |  c = reptile
+      0  0  0 13  0  0  0 |  d = fish
+      0  0  1  0  3  0  0 |  e = amphibian
+      0  0  0  0  0  5  3 |  f = insect
+      0  0  0  0  0  2  8 |  g = invertebrate
+```
+
+
+
+### Elección de un algoritmo
+
+Naive Bayes es uno de los algoritmos más simples, eficientes y efectivos en _machine learning_. Cuando las características son independientes, algo raro en el mundo real, teóricamente es óptimo. Aún así, incluso con atributos dependientes, es muy competitivo. Su principal desventaja  es la incapacidad que tiene de aprender cómo las características interactúan entre sí. Por ejemplo te puede gustar el café y te pueden gustar las tartas, pero odías las tartas con sabor a café. 
+
+Por otra parte, como hemos podido comprobar. la principal ventaja del árbol de decisión es que es un modelo muy fácil de entender y explicar. Además puede manejar atributos tanto categorizados como numéricos y requiere poca preparación de los datos.
+
+Para el mismo ejemplo vamos a ver el porcentaje de aciertos de Naive Bayes.
+
+```java
+Classifier naiveBayesClassifier = new NaiveBayes();
+Evaluation naiveBayesEvaluation = new Evaluation(instances);
+naiveBayesEvaluation.crossValidateModel(naiveBayesClassifier, instances, numFolds, random, new Object[] {});
+System.out.println(naiveBayesEvaluation.toSummaryString());
+```
+
+Vemos que en este caso, el porcentaje de errores es demasiado elevado, por lo que el árbol de decisión es mejor opción.
+
+```shell
+Correctly Classified Instances           4               28.5714 %
+Incorrectly Classified Instances        10               71.4286 %
+Kappa statistic                         -0.4286
+Mean absolute error                      0.6016
+Root mean squared error                  0.6325
+Relative absolute error                128.8169 %
+Root relative squared error            131.4982 %
+Total Number of Instances               14     
+```
+
+
+
+## Ejemplo de regresión
+
+
 
 
 

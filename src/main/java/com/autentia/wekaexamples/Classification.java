@@ -2,6 +2,7 @@ package com.autentia.wekaexamples;
 
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
+import weka.classifiers.bayes.NaiveBayes;
 import weka.classifiers.trees.J48;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -51,15 +52,20 @@ public class Classification {
 
         System.out.println("Resultado de clasificar la nueva instancia: " + PlayAttributeValues.newInstance(result));
 
-        Classifier classifier = new J48();
-        Evaluation evaluation = new Evaluation(instances);
+        Classifier treeClassifier = new J48();
+        Evaluation treeEvaluation = new Evaluation(instances);
         int numFolds = 5;
         Random random = new Random(1);
-        evaluation.crossValidateModel(classifier, instances, numFolds, random, new Object[] {});
-        System.out.println(evaluation.toSummaryString());
+        treeEvaluation.crossValidateModel(treeClassifier, instances, numFolds, random, new Object[] {});
+        System.out.println(treeEvaluation.toSummaryString());
 
-        double[][] confusionMatrix = evaluation.confusionMatrix();
-        System.out.println(evaluation.toMatrixString());
+        double[][] confusionMatrix = treeEvaluation.confusionMatrix();
+        System.out.println(treeEvaluation.toMatrixString());
+
+        Classifier naiveBayesClassifier = new NaiveBayes();
+        Evaluation naiveBayesEvaluation = new Evaluation(instances);
+        naiveBayesEvaluation.crossValidateModel(naiveBayesClassifier, instances, numFolds, random, new Object[] {});
+        System.out.println(naiveBayesEvaluation.toSummaryString());
 
     }
 
