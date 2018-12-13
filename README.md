@@ -77,17 +77,14 @@ Este tutorial está escrito usando el siguiente entorno:
   - JDK: 1.8
 
 
-## Datos de entrada
-
-Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git.
-
-Para el tutorial vamos a utilizar el fichero "weather.numeric.arff" que viene dentro de los ficheros de ejemplo dentro de la carpeta "data" de la distribución de _Weka_. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
-
-
 
 ## Ejemplo de clasificación
 
-Vamos a empezar con la técnica de _learning machine_ más utilizada, la clasificación. Creamos un proyecto maven y le añadimos la dependencia de weka. 
+Vamos a empezar con la técnica de _learning machine_ más utilizada, la clasificación. 
+
+Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git. Para este ejemplo vamos a utilizar el fichero "weather.numeric.arff" que viene en los ficheros de ejemplo  dentro de la carpeta "data" de la distribución de _Weka_. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
+
+Creamos un proyecto maven y le añadimos la dependencia de weka. 
 
 ```xml
 <dependency>
@@ -313,7 +310,183 @@ Total Number of Instances               14
 
 ## Ejemplo de regresión
 
+Para el ejemplo de regresión vamos a usar el fichero "housing.arff" que podemos descargar del repositorio de con los ejemplos de este tutorial (https://github.com/diyipol/wekaexamples/blob/master/src/main/resources/housing.arff).
 
+En el fichero de ejemplo nos encontramos con 506 registros que nos describen precios de la vivienda en los suburbios de Houston. De los catorce atributos que hay, trece son contínuos y uno binario. Nos encontramos atributos del tipo: tasa de criminalidad per cápita por ciudad, proporción de tierra residencial zonificada, concentración de óxidos nítricos, número medio de habitaciones por vivienda, etc. La variable objetivo es MEDV (Valor medio de las casas ocupadas por sus propietarios en $1000).
+
+Al igual que en el ejemplo anterior cargamos el fichero mediante el _DataSource_ para luego convertirlo a instancias y estableciendo el atributo de clase.
+
+```java
+File file = fileUtils.getFile("housing.arff");
+ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
+Instances instances = source.getDataSet();
+instances.setClassIndex(instances.numAttributes() - 1);
+```
+
+
+
+### Regresión lineal 
+
+Vamos a comenzar con la regresión más sencilla, la lineal, que supone una dependencia lineas entre las características y la variable objetivo. En muchos casos este tipo de regresión no es capaz de modelar relaciones complejas.
+
+Al igual que con la clasificación vamos a tener una clase que nos implemente el algoritmo de regresión, en este caso la clase _LinearRegression_.
+
+```java
+import weka.classifiers.functions.LinearRegression;
+...
+    
+LinearRegression linearRegression = new LinearRegression();
+linearRegression.buildClassifier(instances);
+
+System.out.println(linearRegression);
+```
+
+ Como de costumbre, el _toString_ nos imprime nuestro modelo:
+
+```shell
+Linear Regression Model
+
+class =
+
+     -0.1084 * CRIM +
+      0.0458 * ZN +
+      2.7187 * CHAS=1 +
+    -17.376  * NOX +
+      3.8016 * RM +
+     -1.4927 * DIS +
+      0.2996 * RAD +
+     -0.0118 * TAX +
+     -0.9465 * PTRATIO +
+      0.0093 * B +
+     -0.5226 * LSTAT +
+     36.3411
+
+```
+
+Vemos que nos ha construido una función lineal que combina las variables de entrada para calcular el valor medio de la casa. Vamos a ver la validación cruzada con 10 subconjuntos.
+
+```shell
+Correlation coefficient                  0.8451
+Mean absolute error                      3.3933
+Root mean squared error                  4.9145
+Relative absolute error                 50.8946 %
+Root relative squared error             53.3085 %
+Total Number of Instances              506    
+```
+
+
+
+### Árboles de regresión
+
+Otra aproximación es construir un conjunto de modelos de regresión, cada uno con su propia parte de los datos.
+
+![](/Users/pablojose.betancor/Desarrollo/workspaces/intellij/wekaexamples/images/árboles de regresión.png)
+
+En Weka los árboles de regresión están implementados en la clase M5:
+
+```java
+M5P regressionTree = new M5P();
+regressionTree.setOptions(new String[]{""});
+regressionTree.buildClassifier(instances);
+System.out.println(regressionTree);
+```
+
+El modelo inducido es un árbol con ecuaciones en los nodos hoja:
+
+```shell
+M5 pruned model tree:
+(using smoothed linear models)
+
+LSTAT <= 9.725 : 
+|   RM <= 6.941 : 
+|   |   DIS <= 3.325 : 
+|   |   |   RAD <= 7.5 : LM1 (23/38.466%)
+|   |   |   RAD >  7.5 : 
+|   |   |   |   CRIM <= 4.727 : LM2 (3/22.662%)
+|   |   |   |   CRIM >  4.727 : LM3 (4/0%)
+|   |   DIS >  3.325 : 
+|   |   |   RM <= 6.545 : LM4 (72/15.074%)
+|   |   |   RM >  6.545 : 
+|   |   |   |   LSTAT <= 4.915 : 
+|   |   |   |   |   PTRATIO <= 17.75 : LM5 (11/8.841%)
+|   |   |   |   |   PTRATIO >  17.75 : LM6 (4/10.82%)
+|   |   |   |   LSTAT >  4.915 : 
+|   |   |   |   |   RM <= 6.611 : LM7 (7/9.288%)
+|   |   |   |   |   RM >  6.611 : LM8 (18/14.58%)
+|   RM >  6.941 : 
+|   |   RM <= 7.437 : 
+|   |   |   AGE <= 76.95 : LM9 (29/22.763%)
+|   |   |   AGE >  76.95 : 
+|   |   |   |   B <= 394.7 : LM10 (8/40.649%)
+|   |   |   |   B >  394.7 : LM11 (3/6.55%)
+|   |   RM >  7.437 : LM12 (30/35.25%)
+LSTAT >  9.725 : 
+|   LSTAT <= 15 : LM13 (132/28.25%)
+|   LSTAT >  15 : 
+|   |   CRIM <= 5.769 : 
+|   |   |   CRIM <= 0.654 : 
+|   |   |   |   DIS <= 1.906 : LM14 (10/16.417%)
+|   |   |   |   DIS >  1.906 : LM15 (36/26.564%)
+|   |   |   CRIM >  0.654 : LM16 (37/22.767%)
+|   |   CRIM >  5.769 : 
+|   |   |   LSTAT <= 19.73 : LM17 (29/17.632%)
+|   |   |   LSTAT >  19.73 : 
+|   |   |   |   NOX <= 0.675 : LM18 (16/35.377%)
+|   |   |   |   NOX >  0.675 : LM19 (34/15.449%)
+
+LM num: 1
+class = 
+	4.7924 * CRIM 
+	+ 0.003 * ZN 
+	- 0.4795 * INDUS 
+	- 8.2717 * NOX 
+	+ 3.1363 * RM 
+	- 0.4092 * DIS 
+	+ 0.1121 * RAD 
+	- 0.0075 * TAX 
+	- 0.2873 * PTRATIO 
+	+ 0.0006 * B 
+	- 0.742 * LSTAT 
+	+ 25.4161
+	
+...
+
+LM num: 19
+class = 
+	-0.0829 * CRIM 
+	+ 0.0022 * ZN 
+	- 15.0168 * NOX 
+	- 0.5959 * RM 
+	+ 0.0293 * AGE 
+	+ 1.6442 * DIS 
+	+ 0.0227 * RAD 
+	- 0.0014 * TAX 
+	- 0.1031 * PTRATIO 
+	+ 0.0004 * B 
+	- 0.2522 * LSTAT 
+	+ 28.8208
+
+Number of Rules : 19
+```
+
+En este caso el árbol tiene 19 hojas donde cada una se corresponde a una ecuación lineal. Vamos a comprobar ahora si mejoramos la validación.
+
+```java
+Evaluation regressionTreeEvaluation = new Evaluation(instances);
+regressionTreeEvaluation.crossValidateModel(regressionTree, instances, numFolds, random, new Object[]{});
+System.out.println(regressionTreeEvaluation.toSummaryString());
+```
+
+Vemos que hemos mejorado un poco:
+
+```shell
+Correlation coefficient                  0.9155
+Mean absolute error                      2.4485
+Root mean squared error                  3.6975
+Relative absolute error                 36.6528 %
+Root relative squared error             40.0259 %
+Total Number of Instances              506     
+```
 
 
 

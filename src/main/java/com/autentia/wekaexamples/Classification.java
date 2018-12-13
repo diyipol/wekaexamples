@@ -21,8 +21,8 @@ public class Classification {
 
     public static void main(String [] args) throws Exception {
 
-        Classification classification = new Classification();
-        File file = classification.getFile("weather.arff");
+        FileUtils fileUtils = new FileUtils();
+        File file = fileUtils.getFile("weather.arff");
 
         ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
         Instances instances = source.getDataSet();
@@ -69,9 +69,4 @@ public class Classification {
 
     }
 
-    private File getFile(String fileName) {
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL resource = classLoader.getResource(fileName);
-        return new File(resource.getFile());
-    }
 }
