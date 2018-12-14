@@ -86,7 +86,7 @@ rainy,65,70,TRUE,no
 
 ## Ejemplo de clasificación
 
-Vamos a empezar con la técnica de _learning machine_ más utilizada, la clasificación. 
+Vamos a empezar con la técnica de _machine learning_ más utilizada, la clasificación. 
 
 Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git. 
 
@@ -507,7 +507,7 @@ Total Number of Instances              506
 
 
 
-## Concluisones
+## Conclusiones
 
 El mundo del _machine learning_ es muy amplio y complejo, donde a veces no se sabe ni por dónde empezar. Los mismos creadores de Weka tienen cursos gratuitos en inglés, cada uno con una duración de cinco semanas.
 
