@@ -1,6 +1,24 @@
 ## Introducción
 
-El _"machine learning"_ son los algoritmos y técnicas que se utilizan en la fase de análisis y modelado del proceso de _"data science"_. "_Data science"_ abarca todo el proceso de obtención de conocimiento, limpieza, análisis, visualización y despliegue de de datos.
+En este tutorial se hará una pequeña introducción del _machine learning_ enfocada al desarrollo con una de las librerías de Java más usadas para este propósito, Weka.
+
+
+
+## Entorno
+
+Este tutorial está escrito usando el siguiente entorno:
+
+- Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
+- Sistema operativo: macOS Mojave 10.14.1
+- Versiones del software:
+  - Weka: 3.8
+  - JDK: 1.8
+
+
+
+## Introducción al machine learning
+
+El _machine learning_ es un subcampo del _data science_. Si _data science_ abarca todo el proceso de obtención de conocimiento, limpieza, análisis, visualización y despliegue de de datos, el _machine learning_ son los algoritmos y técnicas que se utilizan en la fase de análisis y modelado de este proceso. 
 
 Dentro del _machine learning_ existen tres tipos de aprendizaje:
 
@@ -66,25 +84,22 @@ rainy,65,70,TRUE,no
 
 
 
-## Entorno
-
-Este tutorial está escrito usando el siguiente entorno:
-
-- Hardware: MacBook Pro 15’ (2,5 GHz Intel Core i7, 16GB DDR3)
-- Sistema operativo: macOS Mojave 10.14.1
-- Versiones del software:
-  - Weka: 3.8
-  - JDK: 1.8
-
-
-
 ## Ejemplo de clasificación
 
 Vamos a empezar con la técnica de _learning machine_ más utilizada, la clasificación. 
 
-Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git. Para este ejemplo vamos a utilizar el fichero "weather.numeric.arff" que viene en los ficheros de ejemplo  dentro de la carpeta "data" de la distribución de _Weka_. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
+Todo el código de este tutorial puede ser descargado desde https://github.com/diyipol/wekaexamples.git. 
 
-Creamos un proyecto maven y le añadimos la dependencia de weka. 
+Para este ejemplo vamos a utilizar el fichero "weather.numeric.arff" que viene en los ficheros de ejemplo  dentro de la carpeta "data" de la distribución de _Weka_. También puede ser descargado del repositorio de código. En este ejemplo tenemos como variable objetivo si se puede jugar o no al golf dependiendo de las condiciones meteorológicas.
+
+Los atributos que tenemos son:
+
+* Si está soleado, nublado o lluvioso.
+* La temperatura.
+* La humedad.
+* Si hay viento.
+
+Para comenzar creamos un proyecto maven y le añadimos la dependencia de Weka. 
 
 ```xml
 <dependency>
@@ -128,6 +143,8 @@ En nuestro ejemplo no vamos a eliminar ningún atributo.
 
 ### Árbol de decisión
 
+En el aprendizaje por árbol de decisión se construye un árbol de clasificación donde cada nodo corresponde a uno de los atributos; las aristas a un posible valor (o intervalo)  del atributo a partir del cual se origina el nodo; y cada hoja se corresponde a una etiqueta  de la clase objetivo.
+
 En Weka el árbol de decisión está implementado en la clase J48, que es una reimplementación del algoritmo C4.5 de Quinlan (https://es.wikipedia.org/wiki/C4.5).
 
 Al algoritmo le podemos pasar parámetros adicionales como por ejemplo la poda del árbol para controlar la complejidad del modelo. En este caso le vamos a indicar que no queremos podado. Finalmente para inicializar el proceso de aprendizaje llamamos a _buildClassifier_. El objeto construido se encuentra ahora en la variable _tree_ y podemos visualizarlo con _toString_.
@@ -135,7 +152,7 @@ Al algoritmo le podemos pasar parámetros adicionales como por ejemplo la poda d
 ```java
 J48 tree = new J48();
 String[] options = new String[1];
-options[0] = TREE_UNPRUNED_OPT;
+options[0] = "-U";
 
 tree.setOptions(options);
 
@@ -163,7 +180,7 @@ Number of Leaves  : 	5
 Size of the tree : 	8
 ```
 
-El proceso de decisión comienza en el nodo raíz, en este caso con el atributo _outlook_. Vemos hay dos instancias que indican que se puede jugar al golf si está soleado y la humedad es menor al 75%. Dos instancias indican que no se puede jugar al golf si está soleado pero la humedad es mayor al 75% y así podemos seguir recorriendo todo el árbol.
+El proceso de decisión comienza en el nodo raíz, en este caso con el atributo _outlook_. Vemos que hay dos instancias que indican que se puede jugar al golf si está soleado y la humedad es menor al 75%. Tres instancias indican que no se puede jugar al golf si está soleado pero la humedad es mayor al 75% y así podemos seguir recorriendo todo el árbol.
 
 Ahora vamos a clasificar una nueva instancia. Para ello vamos a usar la clase _DenseInstance_. Iremos estableciendo el valor de cada atributo según su índice. Finamente le pediremos al árbol J48 que nos lo clasifique. 
 
@@ -204,7 +221,7 @@ Resultado de clasificar la nueva instancia:0.0
 
 Ahora vamos a ver qué confianza podemos tener en el modelo que acabamos de construir. Para estimar su rendimiento podemos usar la técnica de validación cruzada (cross-validation).
 
-Con la validación cruzada vamos dividiendo las instancias de muestra en K subconjuntos. Usaremos una parte del conjunto para entrenar y otra para test.  Esto se repetirá en K iteraciones para finalmente hallar la media aritmética. Por ejemplo en nuestro caso, que tenemos 14 instancias podemos:
+Con la validación cruzada vamos dividiendo las instancias de muestra en K subconjuntos. Usaremos una parte del conjunto para entrenar y otra para test.  Esto se repetirá en K iteraciones para finalmente hallar la media aritmética. Un ejemplo en nuestro caso, que tenemos 14 instancias podría ser:
 
 * 1ª iteración: Datos de tests -> 1, 2 y 3. Datos de entrenamiento -> 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 y 14
 * 2ª iteración: Datos de tests -> 4, 5 y 6. Datos de entrenamiento -> 1, 2, 3, 7, 8, 9, 10, 11, 12, 13 y 14
@@ -261,7 +278,7 @@ El resultado que obtenemos al imprimirla es:
  3 2 | b = no
 ```
 
-En este ejemplo a tener una salida booleana no nos aporta ninguna información esta matriz, pero en un ejemplo más complejo, por ejemplo para adivinar animales a partir de sus rasgos (https://github.com/fracpete/collective-classification-weka-package/blob/master/src/site/resources/datasets/nominal/zoo.arff) podemos observar como a un reptil en una ocasión lo clasificó como insecto y en otra como un pez.
+En este ejemplo al tener una salida booleana la matriz nos aporta poca  información, simplemente que dos veces que clasificó que se podía jugar en verdad no se podía, y que en otras dos clasificó que no se podía jugar, pero en verdad si se podía. En un ejemplo más complejo, por ejemplo para adivinar animales a partir de sus rasgos (https://github.com/fracpete/collective-classification-weka-package/blob/master/src/site/resources/datasets/nominal/zoo.arff) se observa mejor esta matriz, por ejemplo podemos observar como a un reptil en una ocasión lo clasificó como insecto y en otra como un pez.
 
 ```shell
     === Confusion Matrix ===
@@ -282,7 +299,7 @@ En este ejemplo a tener una salida booleana no nos aporta ninguna información e
 
 Naive Bayes es uno de los algoritmos más simples, eficientes y efectivos en _machine learning_. Cuando las características son independientes, algo raro en el mundo real, teóricamente es óptimo. Aún así, incluso con atributos dependientes, es muy competitivo. Su principal desventaja  es la incapacidad que tiene de aprender cómo las características interactúan entre sí. Por ejemplo te puede gustar el café y te pueden gustar las tartas, pero odías las tartas con sabor a café. 
 
-Por otra parte, como hemos podido comprobar. la principal ventaja del árbol de decisión es que es un modelo muy fácil de entender y explicar. Además puede manejar atributos tanto categorizados como numéricos y requiere poca preparación de los datos.
+Por otra parte, como hemos podido comprobar, la principal ventaja del árbol de decisión es que es un modelo muy fácil de entender y explicar. Además puede manejar atributos tanto categorizados como numéricos y requiere poca preparación de los datos.
 
 Para el mismo ejemplo vamos a ver el porcentaje de aciertos de Naive Bayes.
 
@@ -314,7 +331,7 @@ Para el ejemplo de regresión vamos a usar el fichero "housing.arff" que podemos
 
 En el fichero de ejemplo nos encontramos con 506 registros que nos describen precios de la vivienda en los suburbios de Houston. De los catorce atributos que hay, trece son contínuos y uno binario. Nos encontramos atributos del tipo: tasa de criminalidad per cápita por ciudad, proporción de tierra residencial zonificada, concentración de óxidos nítricos, número medio de habitaciones por vivienda, etc. La variable objetivo es MEDV (Valor medio de las casas ocupadas por sus propietarios en $1000).
 
-Al igual que en el ejemplo anterior cargamos el fichero mediante el _DataSource_ para luego convertirlo a instancias y estableciendo el atributo de clase.
+Al igual que en el ejemplo anterior cargamos el fichero mediante el _DataSource_ para luego convertirlo a instancias y establecer el atributo de clase.
 
 ```java
 File file = fileUtils.getFile("housing.arff");
@@ -327,7 +344,7 @@ instances.setClassIndex(instances.numAttributes() - 1);
 
 ### Regresión lineal 
 
-Vamos a comenzar con la regresión más sencilla, la lineal, que supone una dependencia lineas entre las características y la variable objetivo. En muchos casos este tipo de regresión no es capaz de modelar relaciones complejas.
+Vamos a comenzar con la regresión más sencilla, la lineal, que supone una dependencia lineal entre las características y la variable objetivo. En muchos casos este tipo de regresión no es capaz de modelar relaciones complejas.
 
 Al igual que con la clasificación vamos a tener una clase que nos implemente el algoritmo de regresión, en este caso la clase _LinearRegression_.
 
@@ -490,7 +507,20 @@ Total Number of Instances              506
 
 
 
+## Concluisones
+
+El mundo del _machine learning_ es muy amplio y complejo, donde a veces no se sabe ni por dónde empezar. Los mismos creadores de Weka tienen cursos gratuitos en inglés, cada uno con una duración de cinco semanas.
+
+- <https://www.futurelearn.com/courses/data-mining-with-weka>
+- <https://www.futurelearn.com/courses/more-data-mining-with-weka> 
+- <https://www.futurelearn.com/courses/advanced-data-mining-with-weka> 
+
+En este tutorial se ha pretendido dar un punto de partida para poner a un progrmador de Java en contexto, con un enfoque más orientado al desarrollo. 
+
+
+
 ## Referencias
 
 * Machine Learning in Java - Second Edition by AshishSingh Bhatia; Bostjan Kaluza. Published by Packt Publishing, 2018.
+* Instant Weka How-to by Boštjan Kaluža. Publisher: Packt Publishing. Published: June 2013
 * https://www.cs.waikato.ac.nz/ml/weka/
