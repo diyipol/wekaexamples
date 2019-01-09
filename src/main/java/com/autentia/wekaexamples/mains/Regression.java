@@ -1,5 +1,6 @@
-package com.autentia.wekaexamples;
+package com.autentia.wekaexamples.mains;
 
+import com.autentia.wekaexamples.utils.FileUtils;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LinearRegression;
 import weka.classifiers.trees.M5P;
@@ -9,6 +10,9 @@ import weka.core.converters.ConverterUtils;
 import java.io.File;
 import java.util.Random;
 
+/**
+ * Diferentes ejemplos simples de regresión
+ */
 public class Regression {
 
     public static void main(String [] args) throws Exception {

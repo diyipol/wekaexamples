@@ -1,4 +1,4 @@
-package com.autentia.wekaexamples;
+package com.autentia.wekaexamples.utils;
 
 import java.io.File;
 import java.net.URL;

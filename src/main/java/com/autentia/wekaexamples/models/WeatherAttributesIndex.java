@@ -1,4 +1,4 @@
-package com.autentia.wekaexamples;
+package com.autentia.wekaexamples.models;
 
 public enum WeatherAttributesIndex {
     OUTLOOK (0),

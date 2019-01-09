@@ -1,5 +1,8 @@
-package com.autentia.wekaexamples;
+package com.autentia.wekaexamples.mains;
 
+import com.autentia.wekaexamples.utils.FileUtils;
+import com.autentia.wekaexamples.models.PlayAttributeValues;
+import com.autentia.wekaexamples.models.WeatherAttributesIndex;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
@@ -12,6 +15,9 @@ import weka.core.converters.ConverterUtils;
 import java.io.File;
 import java.util.Random;
 
+/**
+ * Diferentes ejemplos simples de clasificación
+ */
 public class Classification {
 
     public static final String TREE_UNPRUNED_OPT = "-U";
