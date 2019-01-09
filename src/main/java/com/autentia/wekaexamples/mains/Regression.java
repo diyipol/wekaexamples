@@ -1,5 +1,6 @@
 package com.autentia.wekaexamples.mains;
 
+import com.autentia.wekaexamples.utils.DataSourceUtils;
 import com.autentia.wekaexamples.utils.FileUtils;
 import weka.classifiers.Evaluation;
 import weka.classifiers.functions.LinearRegression;
@@ -20,9 +21,8 @@ public class Regression {
         FileUtils fileUtils = new FileUtils();
         File file = fileUtils.getFile("housing.arff");
 
-        ConverterUtils.DataSource source = new ConverterUtils.DataSource(file.getAbsolutePath());
-        Instances instances = source.getDataSet();
-        instances.setClassIndex(instances.numAttributes() - 1);
+        DataSourceUtils dataSourceUtils = new DataSourceUtils();
+        Instances instances = dataSourceUtils.newWekaInstances(file);
 
         System.out.println(instances.numInstances() + " instancias cargadas.");
 
