@@ -1,3 +1,5 @@
+
+
 ## Introducción
 
 En este tutorial se hará una pequeña introducción del _machine learning_ enfocada al desarrollo con una de las librerías de Java más usadas para este propósito, Weka.
@@ -18,7 +20,7 @@ Este tutorial está escrito usando el siguiente entorno:
 
 ## Introducción al machine learning
 
-El _machine learning_ es un subcampo del _data science_. Si _data science_ abarca todo el proceso de obtención de conocimiento, limpieza, análisis, visualización y despliegue de de datos, el _machine learning_ son los algoritmos y técnicas que se utilizan en la fase de análisis y modelado de este proceso. 
+El _machine learning_ es un subcampo del _data science_. Si _data science_ abarca todo el proceso de obtención de conocimiento, limpieza, análisis, visualización y despliegue de datos, el _machine learning_ son los algoritmos y técnicas que se utilizan en la fase de análisis y modelado de este proceso. 
 
 Dentro del _machine learning_ existen tres tipos de aprendizaje:
 
@@ -48,11 +50,11 @@ Los algoritmos de clasificación más populares son:
 
 Por otro lado, a diferencia de la clasificación, la regresión se aplica a una varible objetivo continua. Por ejemplo, en vez de saber si va a llover o no, para pronosticar la temperatura que hará.
 
-Podemos destacar:
+Podemos destacar las siguientes regresiones:
 
-* Refresión lineal
-* Refresión logística
-* Regresión por mínimos cuadrados
+* Lineal
+* Logística
+* Por mínimos cuadrados
 
 
 
@@ -381,6 +383,16 @@ class =
 ```
 
 Vemos que nos ha construido una función lineal que combina las variables de entrada para calcular el valor medio de la casa. Vamos a ver la validación cruzada con 10 subconjuntos.
+
+```java
+Evaluation linearRegressionEvaluation = new Evaluation(instances);
+int numFolds = 10;
+Random random = new Random(1);
+linearRegressionEvaluation.crossValidateModel(linearRegression, instances, numFolds, random, new Object[] {});
+System.out.println(linearRegressionEvaluation.toSummaryString());
+```
+
+
 
 ```shell
 Correlation coefficient                  0.8451
