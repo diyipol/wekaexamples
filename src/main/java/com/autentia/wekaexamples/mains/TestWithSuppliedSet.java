@@ -12,7 +12,7 @@ import java.io.File;
 /**
  * Ejemplo con un fichero de prueba suministrado por separado al de entrenamiento.
  */
-public class TestDataset {
+public class TestWithSuppliedSet {
 
     private final static String CONFIDENCE_PRUNING_THRESHOLD = "-C";
     private final static String CONFIDENCE_PRUNING_THRESHOLD_VALUE = "0.25";
@@ -38,7 +38,6 @@ public class TestDataset {
         treeClassifier.buildClassifier(trainInstances);
 
         Evaluation evaluation = new Evaluation(testInstances);
-
 
         evaluation.evaluateModel(treeClassifier, testInstances);
 
