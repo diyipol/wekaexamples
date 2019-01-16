@@ -46,7 +46,7 @@ public class BigData {
         NaiveBayesUpdateable naiveBayesUpdatable = new NaiveBayesUpdateable();
         naiveBayesUpdatable.buildClassifier(trainInstances);
 
-        System.out.println("Comenzamos a entrenar el modelo.");
+        System.out.println("Comenzamos a entrenar el modelo con Naive Bayes.");
 
         Instance instance;
 
@@ -54,7 +54,7 @@ public class BigData {
             naiveBayesUpdatable.updateClassifier(instance);
         }
 
-        System.out.println("\nComenzamos a testear el modelo.");
+        System.out.println("\nComenzamos a testear el modelo con Naive Bayes.");
 
         Instances testInstances = dataSourceUtils.newWekaInstances(testFile);
         Evaluation evaluation = new Evaluation(testInstances);
@@ -65,6 +65,39 @@ public class BigData {
         System.out.println(evaluation.toSummaryString(printComplexityStatistics));
 
         System.out.println(evaluation.toMatrixString());
+
+        /* ¡¡¡90 minutos para evaluar el IBK!!!
+
+        IBk iBk = new IBk();
+        iBk.buildClassifier(trainInstances);
+        //iBk.setKNN(5);
+
+        System.out.println("Comenzamos a entrenar el modelo con K-nearest neighbours.");
+
+        loader.reset();
+        trainInstances = loader.getStructure();
+        trainInstances.setClassIndex(trainInstances.numAttributes() - 1);
+
+        long currentTimeMillis = System.currentTimeMillis();
+
+        while ((instance = loader.getNextInstance(trainInstances))  != null) {
+            iBk.updateClassifier(instance);
+        }
+
+        System.out.println("Modelo entrenado en [" + ((System.currentTimeMillis() - currentTimeMillis) / 1000)/60 + "] minutos.");
+
+        currentTimeMillis = System.currentTimeMillis();
+
+        evaluation = new Evaluation(testInstances);
+
+        evaluation.evaluateModel(iBk, testInstances);
+
+        System.out.println("Modelo evaluado en [" + ((System.currentTimeMillis() - currentTimeMillis) / 1000)/60 + "] minutos.");
+
+        System.out.println(evaluation.toSummaryString(printComplexityStatistics));
+
+        System.out.println(evaluation.toMatrixString());
+        */
     }
 
     private static File getTrainFile(String trainFilePath) throws Exception {
